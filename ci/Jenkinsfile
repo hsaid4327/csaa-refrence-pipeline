@@ -7,7 +7,7 @@ environment {
  
 
 def prebuild () {
-        sh 'mkdir -p ' + ${STAGE_DIR} + 'deployments'        
+        sh 'mkdir -p ' + STAGE_DIR + 'deployments'        
     }
 
 
@@ -36,8 +36,8 @@ pipeline {
             steps{
               container("jnlp"){
                  
-                 
-                  sh '''cp app-src/stage/hello.war ${STAGE_DIR}/deployments''' 
+                  sh 'cp app-src/stage/hello.war ' + STAGE_DIR + 'deployments'        
+                  
                   
               }
                 
