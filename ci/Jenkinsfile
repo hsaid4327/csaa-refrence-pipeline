@@ -33,7 +33,7 @@ pipeline {
             steps{
               container("jnlp"){
                  
-                  sh 'cp app-src/stage/hello.war ' + STAGE_DIR + 'deployments'        
+                  sh 'cp app-src/target/hello.war ' + STAGE_DIR + 'deployments'        
                   
                   
               }
