@@ -10,7 +10,9 @@ pipeline {
             steps{
               container("jnlp"){
                  
-                  sh 'cd app-src;mvn clean install'
+                 
+                  sh '''cd app-src
+                  mvn clean package -DskipTests=true''' 
                   
               }
                 
