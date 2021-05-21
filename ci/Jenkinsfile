@@ -1,0 +1,26 @@
+pipeline {
+    
+    agent {
+        label 'hsaid-agent'
+    }
+    
+    stages{
+        stage("maven container stage"){
+            steps{
+              container("jnlp"){
+                  sh "mvn --version"
+                  
+              }
+                
+            }
+        }
+        stage("skope stage"){
+            steps{
+                container("skopeo"){
+                    sh "skopeo --version"
+                }
+                
+            }
+        }
+    }
+}
