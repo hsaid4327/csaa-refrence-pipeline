@@ -61,10 +61,12 @@ pipeline {
         }
                 
     
-    stage("skope stage"){
+    stage("Push Image to external repo"){
+      input 'Ready to push image to external registry?'       
+            
             steps{
                 container("skopeo"){
-                    sh "skopeo --version"
+                    sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds openshift:\$(oc whoami -t) --dest-creds hsaid4327:NabIla4327 docker://image-registry.openshift-image-registry.svc.cluster.local:5000/${${DEV_PROJ}/myapp:latest docker://quay.io/hsaid4327/csaa/myapp:stable"
                 }
                 
             }
