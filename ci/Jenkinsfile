@@ -1,7 +1,7 @@
 pipeline {
     
     agent {
-        label 'cssa-agent'
+        label 'csaa-agent'
     }
     
     stages{
