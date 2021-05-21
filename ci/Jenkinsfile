@@ -7,7 +7,7 @@ pipeline {
 environment {
  
    def DEV_PROJ = "csaa-dev"
-   def STAGE_DIR= "/opt/app/myapp/
+   def STAGE_DIR= "/opt/app/myapp/"
  }
     def prebuild () {
         sh 'mkdir -p ' + ${STAGE_DIR} + 'deployments'        
