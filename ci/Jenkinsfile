@@ -3,7 +3,7 @@ pipeline {
     agent {
         label 'csaa-agent'
     }
-    options { timestamps () }
+    
     
     stages{
         stage("Application Artifact Build"){
