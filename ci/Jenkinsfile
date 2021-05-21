@@ -41,7 +41,27 @@ pipeline {
             }
         }
         
-        stage("skope stage"){
+      stage("Build Application Image"){
+            steps{
+              container("jnlp"){
+                 
+          script {
+              openshift.withCluster() {
+                openshift.withProject("${DEV_PROJ}") {
+                  openshift.selector("bc", "myapp").startBuild("--from-dir=/tmp/workspace/myapp", "--wait=true")
+                  
+        
+                  }
+               }
+            } 
+        
+              }
+                
+            }
+        }
+                
+    
+    stage("skope stage"){
             steps{
                 container("skopeo"){
                     sh "skopeo --version"
