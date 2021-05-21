@@ -1,5 +1,5 @@
 DEV_PROJ = 'csaa-dev'
-STAGE_DIR = '/opt/app/myapp/'
+STAGE_DIR = '/tmp/workspace/myapp/'
 
 def prebuild () {
         sh 'mkdir -p ' + STAGE_DIR + 'deployments'        
