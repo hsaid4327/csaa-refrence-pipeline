@@ -4,12 +4,19 @@ pipeline {
         label 'csaa-agent'
     }
     
-    
+environment {
+ 
+   def DEV_PROJ = "csaa-dev"
+   def STAGE_DIR= "/opt/app/myapp/
+ }
+    def prebuild () {
+        sh 'mkdir -p ' + ${STAGE_DIR} + 'deployments'        
+    }
     stages{
         stage("Application Artifact Build"){
             steps{
               container("jnlp"){
-                 
+                 prebuild ()
                  
                   sh '''cd app-src
                   mvn clean package -DskipTests=true''' 
@@ -18,6 +25,19 @@ pipeline {
                 
             }
         }
+
+   stage("Copy Artifact to stage"){
+            steps{
+              container("jnlp"){
+                 
+                 
+                  sh '''cp app-src/stage/hello.war ${STAGE_DIR}/deployments''' 
+                  
+              }
+                
+            }
+        }
+        
         stage("skope stage"){
             steps{
                 container("skopeo"){
