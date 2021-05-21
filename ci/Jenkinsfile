@@ -3,12 +3,14 @@ pipeline {
     agent {
         label 'csaa-agent'
     }
+    options { timestamps () }
     
     stages{
-        stage("maven container stage"){
+        stage("Application Artifact Build"){
             steps{
               container("jnlp"){
-                  sh "mvn --version"
+                 
+                  sh 'cd app-src;mvn clean install'
                   
               }
                 
