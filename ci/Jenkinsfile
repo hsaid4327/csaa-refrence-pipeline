@@ -71,7 +71,7 @@ pipeline {
             }            
         steps{
                 container("skopeo"){
-                    sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds $OCP_CREDS_USR:$OCP_CREDS_PSW --dest-creds $QUAY_CREDS_USR:$QUAY_CREDS_PSW docker://image-registry.openshift-image-registry.svc.cluster.local:5000/${DEV_PROJ}/myapp:latest docker://quay.io/hsaid4327/myapp:stable"
+                    sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds $OCP_CREDS_USR:$OCP_CREDS_PSW --dest-creds $QUAY_CREDS_USR:$QUAY_CREDS_PSW docker://image-registry.openshift-image-registry.svc.cluster.local:5000/${DEV_PROJ}/myapp:latest docker://quay.io/hsaid4326/myapp:stable"
                 }
                 
             }
