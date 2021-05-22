@@ -1,5 +1,4 @@
-DEV_PROJ = 'csaa-dev'
-STAGE_DIR = '/tmp/workspace/myapp/'
+
 
 
 pipeline {
@@ -7,20 +6,21 @@ pipeline {
     agent {
         label 'csaa-agent'
     }
-    
+  parameters {
+        string(name: 'APP_MSG', defaultValue: 'Default Message from application', description: 'Message to pass to deployment?')
+  
+        choice(name: 'Environment', choices: ['csaa-dev', 'csaa-qa'], description: 'Pick environment to deploy your application')
+  }    
 
     stages{
-
-
- 
-        
+    
       stage("Deploy Application Image"){
             steps{
               container("jnlp"){
                  
             script {
               openshift.withCluster() {
-                openshift.withProject("${DEV_PROJ}") {
+                openshift.withProject("${params.Environment}") {
                               // Deploy the development application.
                  def dcdev = openshift.selector("dc", "myapp").object()
                 //dcdev.spec.template.spec.containers[0].env[0].value="${devTag} (task-dev)"
