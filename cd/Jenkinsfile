@@ -24,16 +24,17 @@ pipeline {
                              return (it.object().status.phase == "Running")
                             }
                     
-                         } 
+                         } //end of timeout
 
-                     }
-                   }    
-                }
+                       }//withProject
+                   } //withcluster   
+                 }//script
 
-             }
+              }//container
                 
             }
         } 
+    }
 
  }//end of pipeline
 
