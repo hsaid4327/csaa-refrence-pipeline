@@ -12,9 +12,20 @@ pipeline {
     stages{
     
       stage("Deploy Application Image"){
-            steps{
+           steps{
               container("jnlp"){
-                echo "This is the first stage"
+                 script{
+                   openshift.withCluster() {
+                     openshift.withProject("${params.Environment}") {
+                // Deploy the development application.
+                   def dcdev = openshift.selector("dc", "myapp").object()
+
+              }
+    
+
+           }
+        }    
+                  }
 
                 }
                 
