@@ -24,8 +24,8 @@ pipeline {
                         // def dc_version = dcdev.status.latestVersion;
                          //echo "version is ${dc_version}"
 
-                   def latestDeploymentVersion = openshift.selector('dc',"myapp").object().status.latestVersion
-                    def rc = openshift.selector('rc', "myapp-${latestDeploymentVersion}")
+                   def latestDeploymentVersion = openshift.selector("dc","myapp").object().status.latestVersion
+                    def rc = openshift.selector("rc", "myapp-${latestDeploymentVersion}")
                     timeout (time: 10, unit: 'MINUTES') {
                         rc.untilEach(1){
                             def rcMap = it.object()
