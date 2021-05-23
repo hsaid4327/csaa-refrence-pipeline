@@ -20,7 +20,7 @@ pipeline {
                 // Deploy the development application.
                    def dcdev = openshift.selector("dc", "myapp").object()
 
-              }
+                }
     
 
            }
@@ -30,9 +30,7 @@ pipeline {
                 }
                 
             }
-        } //end of stage
+        } 
 
  }//end of pipeline
-    
-  
-}
+
