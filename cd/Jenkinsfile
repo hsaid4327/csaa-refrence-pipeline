@@ -18,7 +18,7 @@ pipeline {
                    openshift.withCluster() {
                      openshift.withProject("csaa-dev") {
                         // Deploy the development application.
-                        def dcdev = openshift.selector("dc", "myapp").object()
+                        //def dcdev = openshift.selector("dc", "myapp").object()
                          openshift.selector("dc", "myapp").rollout().latest()
                          def dc_version = dcdev.status.latestVersion
                          echo "version is ${dc_version}"
