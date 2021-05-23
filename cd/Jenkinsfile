@@ -2,8 +2,8 @@ pipeline {
     
     agent {
         label 'csaa-agent'
-    }
- 
+     }
+
 
     stages{
     
@@ -13,9 +13,11 @@ pipeline {
                 echo "This is the first stage"
 
                 }
-
                 
             }
         } //end of stage
 
-}//end of pipeline
+ }//end of pipeline
+    
+  
+}
