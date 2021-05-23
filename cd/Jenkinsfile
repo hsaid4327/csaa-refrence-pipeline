@@ -17,14 +17,8 @@ pipeline {
                  script{
                    openshift.withCluster() {
                      openshift.withProject("csaa-dev") {
-                         def rm = openshift.selector("dc", "myapp").rollout().latest()
-                         
-                         timeout(5) { 
-                             openshift.selector("dc", "myapp").related('pods').untilEach(1) {
-                             return (it.object().status.phase == "Running")
-                            }
-                    
-                         } //end of timeout
+                         openshift.selector("dc", "myapp").rollout().latest()
+                          sh "oc project csaa-dev; oc get pods"
 
                        }//withProject
                    } //withcluster   
