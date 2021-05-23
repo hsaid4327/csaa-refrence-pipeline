@@ -10,38 +10,12 @@ pipeline {
       stage("Deploy Application Image"){
             steps{
               container("jnlp"){
-                 
-            script {
-              openshift.withCluster() {
-                openshift.withProject("csaa-dev") {
-                              // Deploy the development application.
-                 def dcdev = openshift.selector("dc", "myapp").object()
-                //dcdev.spec.template.spec.containers[0].env[0].value="${devTag} (task-dev)"
-                //openshift.apply(dcdev)
-               openshift.selector("dc", "myapp").rollout().latest();
+                echo "This is the first stage"
 
-          // Wait for application to be deployed
-         // def dc = openshift.selector("dc", "tasks").object()
-          def dc_version = dcdev.status.latestVersion
-          def rc = openshift.selector("rc", "myapp-${dc_version}").object()
-
-          echo "Waiting for ReplicationController myapp-${dc_version} to be ready"
-          while (rc.spec.replicas != rc.status.readyReplicas) {
-            sleep 5
-            rc = openshift.selector("rc", "myapp-${dc_version}").object()
-          }
-                  
-        
-                  }
                 }
-             } 
-        
-           }
+
                 
             }
         } //end of stage
-                
-    
 
-    }//end of stages
 }//end of pipeline
