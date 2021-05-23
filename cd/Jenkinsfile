@@ -16,9 +16,9 @@ pipeline {
               container("jnlp"){
                  script{
                    openshift.withCluster() {
-                     openshift.withProject("${params.Environment}") {
-                // Deploy the development application.
-                   def dcdev = openshift.selector("dc", "myapp").object()
+                     openshift.withProject("myapp") {
+                        // Deploy the development application.
+                        def dcdev = openshift.selector("dc", "myapp").object()
 
                 }
     
