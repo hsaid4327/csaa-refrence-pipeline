@@ -17,33 +17,20 @@ pipeline {
                  script{
                    openshift.withCluster() {
                      openshift.withProject("csaa-dev") {
-                        // Deploy the development application.
-                        // sh "oc project -q"
-                         //def dcdev = openshift.selector('dc', "myapp").object();
-                         openshift.selector("dc", "myapp").rollout().latest()
-                        // def dc_version = dcdev.status.latestVersion;
-                         //echo "version is ${dc_version}"
+                         def rm = openshift.selector("dc", "myapp").rollout().latest()
+                         
+                         timeout(5) { 
+                             openshift.selector("dc", "myapp").related('pods').untilEach(1) {
+                             return (it.object().status.phase == "Running")
+                            }
+                    
+                         } 
 
-                   def latestDeploymentVersion = openshift.selector("dc","myapp").object().status.latestVersion
-                    def rc = openshift.selector("rc", "myapp-${latestDeploymentVersion}")
-                    timeout (time: 10, unit: 'MINUTES') {
-                        rc.untilEach(1){
-                            def rcMap = it.object()
-                            return (rcMap.status.replicas.equals(rcMap.status.readyReplicas))
-                        }
-                    }                
-                     
-                     
-                     
-                     
                      }
-    
-
-           }
-        }    
-                  }
-
+                   }    
                 }
+
+             }
                 
             }
         } 
