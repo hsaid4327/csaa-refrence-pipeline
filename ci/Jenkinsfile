@@ -19,8 +19,10 @@ pipeline {
               container("jnlp"){
                  script {
                  prebuild ()
-                 
-                  sh '''cd app-src
+                   def pom = readMavenPom file: './app-src/pom.xml'
+                   version = pom.version
+                   sh '''cd app-src
+                        
                   mvn clean package -DskipTests=true''' 
                 }
                   
