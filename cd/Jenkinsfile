@@ -21,6 +21,8 @@ pipeline {
                           //sh "oc project csaa-dev; oc get pods"
                           //def rc = openshift.selector("rc", "myapp")
                          openshift.selector( 'deploymentconfig/myapp' ).describe()
+                          def latestDeploymentVersion = openshift.selector('deploymentconfig/myapp').object().status.latestVersion
+                         echo "${latestDeploymentVersion}"
                          
                    } //withcluster   
                  }//script
