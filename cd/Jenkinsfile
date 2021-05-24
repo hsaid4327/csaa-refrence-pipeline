@@ -1,3 +1,10 @@
+def ocpProject, appMsg, appVersion
+
+def prebuild () {
+    ocpProject="${params.Environment}"
+    appMsg="${params.APP_MSG}"
+}   
+
 pipeline {
     
     agent {
@@ -11,14 +18,25 @@ pipeline {
 
     stages{
     
-      stage("Deploy Application Image"){
+		stage('Configure Properties'){ 
+            steps {
+				script {
+				
+					prebuild ()	
+					
+                   
+				}
+			}
+        }      
+        
+       stage("Deploy Application Image"){
            steps{
               container("jnlp"){
                  script{
                    openshift.withCluster() {
                        openshift.withProject("${params.Environment}") {
                          openshift.selector("dc", "myapp").rollout().latest()
-                           sh 'oc project '+ ${params.Environment}+'; oc rollout status dc/myapp -w; oc delete pod --field-selector=status.phase==Succeeded'
+                           sh 'oc project '+ocpProject+'; oc rollout status dc/myapp -w; oc delete pod --field-selector=status.phase==Succeeded'
                          
                    } //withcluster   
                  }//script
