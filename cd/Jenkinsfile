@@ -2,7 +2,7 @@
 
 def prebuild () {
     ocpProject="${params.Environment}"
-    appMsg="${params.APP_MSG}"
+    appMsg="\"${params.APP_MSG}\""
     imageTag="\"${params.IMG_TAG}\""
 }   
 
