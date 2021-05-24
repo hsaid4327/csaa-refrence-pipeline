@@ -21,6 +21,7 @@ pipeline {
                  prebuild ()
                    def pom = readMavenPom file: './app-src/pom.xml'
                    version = pom.version
+                   echo "The version is ${version}"
                    sh '''cd app-src
                         
                   mvn clean package -DskipTests=true''' 
