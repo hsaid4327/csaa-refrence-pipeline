@@ -47,7 +47,7 @@ objects:
           - name: APP_MSG
             value: ${APP_MSG} 
           image: quay.io/hsaid4326/myapp:${IMAGE_TAG}
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           name: myapp
           resources: {}
           terminationMessagePath: /dev/termination-log
