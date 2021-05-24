@@ -18,7 +18,7 @@ pipeline {
                    openshift.withCluster() {
                        openshift.withProject("${params.Environment}") {
                          openshift.selector("dc", "myapp").rollout().latest()
-                           sh 'oc project $params.Environment; oc rollout status dc/myapp -w;oc delete pod --field-selector=status.phase==Succeeded'
+                           sh 'oc project '+ ${params.Environment}+'; oc rollout status dc/myapp -w; oc delete pod --field-selector=status.phase==Succeeded'
                          
                    } //withcluster   
                  }//script
