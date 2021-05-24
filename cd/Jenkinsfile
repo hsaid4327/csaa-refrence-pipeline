@@ -1,4 +1,4 @@
-def ocpProject, appMsg, appVersion
+
 
 def prebuild () {
     ocpProject="${params.Environment}"
@@ -18,14 +18,14 @@ pipeline {
 
     stages{
     
-		stage('Configure Properties'){ 
+	stage('Configure Properties'){ 
             steps {
-				script {
+		script {
 				
-					prebuild ()	
+		   prebuild ()	
 					
                    
-				}
+		  }
 			}
         }      
         
