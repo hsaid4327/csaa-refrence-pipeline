@@ -18,10 +18,10 @@ pipeline {
                    openshift.withCluster() {
                      openshift.withProject("csaa-dev") {
                          openshift.selector("dc", "myapp").rollout().latest()
-                          sh "oc project csaa-dev; oc get pods"
-                          def depCfg = (openshift.selector("dc", "myapp")).status.latestVersion
-                         echo "${depCfg}"
-                       }//withProject
+                          //sh "oc project csaa-dev; oc get pods"
+                          //def rc = openshift.selector("rc", "myapp")
+                         openshift.selector( 'deploymentconfig/myapp' ).describe()
+                         
                    } //withcluster   
                  }//script
 
