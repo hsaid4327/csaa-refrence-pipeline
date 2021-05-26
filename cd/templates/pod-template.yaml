@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+name: test
+metadata:
+  name: test
+spec:
+  containers:
+  - name: jnlp
+    image: image-registry.openshift-image-registry.svc:5000/openshift/jenkins-agent-maven:latest
+    imagePullPolicy: Always
+    args: 
+    - "${computer.jnlpmac} ${computer.name}"
+    workingDir: /tmp
+  - name: skopeo
+    image: registry.redhat.io/rhel8/skopeo
+    command:
+    - cat
+    tty: true
