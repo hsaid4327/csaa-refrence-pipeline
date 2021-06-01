@@ -59,6 +59,58 @@ objects:
         terminationGracePeriodSeconds: 30
     test: false
     triggers: []
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+    labels:
+      app: myapp-green
+      app.kubernetes.io/component: myapp-green
+      app.kubernetes.io/instance: myapp-green
+    name: myapp
+    namespace: ${NAMESPACE}-qa
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      deploymentconfig: myapp-green
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+        labels:
+          deploymentconfig: myapp-green
+      spec:
+        containers:
+        - env:
+          - name: APP_MSG
+            value: ${APP_MSG} 
+          image: quay.io/hsaid4326/myapp:${IMAGE_TAG}
+          imagePullPolicy: Always
+          name: myapp-green
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers: []
+
+
+
+
 - apiVersion: v1
   kind: Service
   metadata:
