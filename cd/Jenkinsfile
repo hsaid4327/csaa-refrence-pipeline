@@ -67,18 +67,48 @@ pipeline {
            }
         }
         steps {
+            
            echo "Blue/Green Deployment\n"
            sh '''
             oc project csaa-qa;
             destApp=$(oc get route/myapp -o=jsonpath='{.spec.to.name}')
+	    if [ $destApp == "myapp-green" ]; then
+	        destApp="myapp-blue"
+	    else
+	        destApp="myapp-green"
             echo "the destination is $destApp"
+	    oc rollout latest dc/$destApp
+	    oc rollout status dc/myapp -w 
+	    oc delete pod --field-selector=status.phase==Succeeded
+	    
            '''
-           echo "outside destApp"
-            echo "outside $destApp"
-             echo "outside ${destApp}"
+ 
+            
         }
      }
-
+    stage('Switch over to new Version') {
+        when {
+           allOf {
+              expression {params.Environment == "csaa-qa"}
+              
+           }
+        }
+        steps {
+	   input message: "Switch to new version?"
+           
+           sh '''
+            oc project csaa-qa;
+            destApp=$(oc get route/myapp -o=jsonpath='{.spec.to.name}')
+	    if [ $destApp == "myapp-green" ]; then
+	        destApp="myapp-blue" 
+	    else
+	        destApp="myapp-green"
+	    oc patch route/myapp -p '{"spec":{"to":{"name":"$destApp"}}}'
+           '''
+ 
+            
+        }
+     }
 
 
   }
