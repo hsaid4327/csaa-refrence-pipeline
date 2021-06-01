@@ -20,7 +20,7 @@ objects:
       app.kubernetes.io/component: myapp
       app.kubernetes.io/instance: myapp
     name: myapp
-    namespace: ${NAMESPACE}-dev
+    namespace: ${NAMESPACE}
   spec:
     replicas: 1
     revisionHistoryLimit: 10
