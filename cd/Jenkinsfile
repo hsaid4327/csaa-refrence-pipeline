@@ -72,10 +72,11 @@ pipeline {
            sh '''
             oc project csaa-qa;
             destApp=$(oc get route/myapp -o=jsonpath='{.spec.to.name}')
-	    if [[ $destApp == "myapp-green" ]]; then
+	    if [[ "$destApp" == "myapp-green" ]]; then
 	        destApp="myapp-blue"
 	    else
 	        destApp="myapp-green"
+	    fi
             echo "the destination is $destApp"
 	    oc rollout latest dc/$destApp
 	    oc rollout status dc/myapp -w 
@@ -99,10 +100,11 @@ pipeline {
            sh '''
             oc project csaa-qa;
             destApp=$(oc get route/myapp -o=jsonpath='{.spec.to.name}')
-	    if [[ $destApp == "myapp-green" ]]; then
+	    if [[ "$destApp" == "myapp-green" ]]; then
 	        destApp="myapp-blue" 
 	    else
 	        destApp="myapp-green"
+	    fi
 	    oc patch route/myapp -p '{"spec":{"to":{"name":"$destApp"}}}'
            '''
  
