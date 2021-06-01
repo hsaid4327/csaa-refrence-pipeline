@@ -72,7 +72,7 @@ pipeline {
            sh '''
             oc project csaa-qa;
             destApp=$(oc get route/myapp -o=jsonpath='{.spec.to.name}')
-	    if [ $destApp == "myapp-green" ]; then
+	    if [[ $destApp == "myapp-green" ]]; then
 	        destApp="myapp-blue"
 	    else
 	        destApp="myapp-green"
@@ -99,7 +99,7 @@ pipeline {
            sh '''
             oc project csaa-qa;
             destApp=$(oc get route/myapp -o=jsonpath='{.spec.to.name}')
-	    if [ $destApp == "myapp-green" ]; then
+	    if [[ $destApp == "myapp-green" ]]; then
 	        destApp="myapp-blue" 
 	    else
 	        destApp="myapp-green"
