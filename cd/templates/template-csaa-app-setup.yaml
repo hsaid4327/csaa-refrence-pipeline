@@ -59,6 +59,52 @@ objects:
         terminationGracePeriodSeconds: 30
     test: false
     triggers: []
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: myapp
+      app.kubernetes.io/component: myapp
+      app.kubernetes.io/instance: myapp
+    name: myapp
+    namespace: ${NAMESPACE}-dev
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    - name: 8443-tcp
+      port: 8443
+      protocol: TCP
+      targetPort: 8443
+    - name: 8778-tcp
+      port: 8778
+      protocol: TCP
+      targetPort: 8778
+    selector:
+      deploymentconfig: myapp
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+    labels:
+      app: myapp
+      app.kubernetes.io/component: myapp
+      app.kubernetes.io/instance: myapp
+    name: myapp
+    namespace: ${NAMESPACE}-dev
+  spec:
+    host: myapp-${NAMESPACE}-dev.apps.cluster-914a.914a.example.opentlc.com
+    port:
+      targetPort: 8080-tcp
+    to:
+      kind: Service
+      name: myapp
+      weight: 100
+    wildcardPolicy: None    
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
   metadata:
@@ -67,7 +113,7 @@ objects:
       app: myapp-green
       app.kubernetes.io/component: myapp-green
       app.kubernetes.io/instance: myapp-green
-    name: myapp
+    name: myapp-green
     namespace: ${NAMESPACE}-qa
   spec:
     replicas: 1
@@ -107,19 +153,63 @@ objects:
         terminationGracePeriodSeconds: 30
     test: false
     triggers: []
-
-
-
-
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+    labels:
+      app: myapp-blue
+      app.kubernetes.io/component: myapp-blue
+      app.kubernetes.io/instance: myapp-blue
+    name: myapp-blue
+    namespace: ${NAMESPACE}-qa
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      deploymentconfig: myapp-blue
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+        labels:
+          deploymentconfig: myapp-blue
+      spec:
+        containers:
+        - env:
+          - name: APP_MSG
+            value: ${APP_MSG} 
+          image: quay.io/hsaid4326/myapp:${IMAGE_TAG}
+          imagePullPolicy: Always
+          name: myapp-blue
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers: []
 - apiVersion: v1
   kind: Service
   metadata:
     labels:
-      app: myapp
-      app.kubernetes.io/component: myapp
-      app.kubernetes.io/instance: myapp
+      app: myapp-green
+      app.kubernetes.io/component: myapp-green
+      app.kubernetes.io/instance: myapp-green
     name: myapp
-    namespace: ${NAMESPACE}
+    namespace: ${NAMESPACE}-qa
   spec:
     ports:
     - name: 8080-tcp
@@ -135,7 +225,34 @@ objects:
       protocol: TCP
       targetPort: 8778
     selector:
-      deploymentconfig: myapp
+      deploymentconfig: myapp-green
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: myapp-blue
+      app.kubernetes.io/component: myapp-blue
+      app.kubernetes.io/instance: myapp-blue
+    name: myapp-blue
+    namespace: ${NAMESPACE}-qa
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    - name: 8443-tcp
+      port: 8443
+      protocol: TCP
+      targetPort: 8443
+    - name: 8778-tcp
+      port: 8778
+      protocol: TCP
+      targetPort: 8778
+    selector:
+      deploymentconfig: myapp-blue
     sessionAffinity: None
     type: ClusterIP
 - apiVersion: route.openshift.io/v1
@@ -147,16 +264,19 @@ objects:
       app.kubernetes.io/component: myapp
       app.kubernetes.io/instance: myapp
     name: myapp
-    namespace: ${NAMESPACE}
+    namespace: ${NAMESPACE}-qa
   spec:
-    host: myapp-${NAMESPACE}.apps.cluster-914a.914a.example.opentlc.com
+ 
     port:
       targetPort: 8080-tcp
+    subdomain: ""
     to:
       kind: Service
-      name: myapp
+      name: myapp-green
       weight: 100
-    wildcardPolicy: None
+    wildcardPolicy: None    
+
+
 parameters:
 - name: NAMESPACE
   displayName: namespace of the project for application
