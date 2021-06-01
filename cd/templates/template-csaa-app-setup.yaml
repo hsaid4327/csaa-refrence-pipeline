@@ -208,7 +208,7 @@ objects:
       app: myapp-green
       app.kubernetes.io/component: myapp-green
       app.kubernetes.io/instance: myapp-green
-    name: myapp
+    name: myapp-green
     namespace: ${NAMESPACE}-qa
   spec:
     ports:
