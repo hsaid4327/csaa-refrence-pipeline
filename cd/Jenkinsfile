@@ -4,11 +4,12 @@ def prebuild () {
     ocpProject="${params.Environment}"
     appMsg="\"${params.APP_MSG}\""
     imageTag="\"${params.IMG_TAG}\""
+    destApp=""
 }   
 
 pipeline {
     
-    agent {
+  agent {
         label 'csaa-agent'
      }
   parameters {
@@ -19,18 +20,17 @@ pipeline {
         string(name: 'IMG_TAG', defaultValue: 'stable', description: 'image version to deploy?')
   }    
 
-    stages{
+  stages{
     
-	stage('Configure Properties'){ 
-            steps {
-		script {
-				
-		   prebuild ()	
-					
-                   
-		  }
-			}
-        }      
+  	stage('Configure Properties'){ 
+              steps {
+  		script {
+  				
+  		   prebuild ()	
+       
+  		 }
+  			}
+          }      
         
        stage("Deploy Application Image"){
            steps{
@@ -42,14 +42,37 @@ pipeline {
 			   openshift.selector("dc", "myapp").rollout().latest()
                            sh 'oc project '+ocpProject+'; oc rollout status dc/myapp -w; oc delete pod --field-selector=status.phase==Succeeded'
                          
-                   } //withcluster   
-                 }//script
+                   }   
+                 }
 
-              }//container
+              }
                 
             }
         } 
     }
+
+    stage('Blue/Green Production Deployment') {
+        when {
+           allOf {
+              expression {params.Environment == "csaa-qa"}
+              
+           }
+        }
+        steps {
+           echo "Blue/Green Deployment\n"
+           sh '''
+            oc project csaa-qa;
+            destApp=$(oc get route/myapp -o=jsonpath='{.spec.to.name}')
+            echo "the destination is $destApp"
+           '''
+           echo "outside destApp"
+            echo "outside $destApp"
+             echo "outside ${destApp}"
+        }
+     }
+
+
+
   }
  }//end of pipeline
 
