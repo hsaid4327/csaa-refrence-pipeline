@@ -33,7 +33,15 @@ pipeline {
           }      
         
        stage("Deploy Application Image"){
-           steps{
+        when {
+           allOf {
+              expression {params.Environment == "csaa-dev"}
+              
+           }
+        }           
+	       
+	       
+	     steps{
               container("jnlp"){
                  script{
                    openshift.withCluster() {
