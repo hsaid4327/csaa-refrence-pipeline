@@ -79,7 +79,7 @@ pipeline {
 	    fi
             echo "the destination is $destApp"
 	    oc rollout latest dc/$destApp
-	    oc rollout status dc/myapp -w 
+	    oc rollout status dc/$destApp -w 
 	    oc delete pod --field-selector=status.phase==Succeeded
 	    
            '''
