@@ -62,7 +62,7 @@ pipeline {
     stage('Blue/Green Production Deployment') {
         when {
            allOf {
-              expression {params.Environment == "csaa-qa"}
+              expression {params.Environment == "csaa-dev"}
               
            }
         }
@@ -105,7 +105,7 @@ pipeline {
 	    else
 	        destApp="myapp-green"
 	    fi
-	    oc patch route/myapp -p '{"spec":{"to":{"name":"$destApp"}}}'
+	    oc patch route/myapp -p '{"spec":{"to":{"name":"${destApp}"}}}'
            '''
  
             
