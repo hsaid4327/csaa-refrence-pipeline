@@ -79,7 +79,7 @@ pipeline {
 	    fi
             echo "the destination is $destApp"
 	    cd /tmp/workspace/csaa-cd;
-	    oc process -f /tmp/workspace/csaa-cd/cd/templates/template-csaa-app-only.yaml -p NAMESPACE='+ocpProject+' -p APP_MSG='+appMsg+' -p IMAGE_TAG='+imageTag+' -p APP_NAME=$destApp | oc apply -f -
+	    oc process -f /tmp/workspace/csaa-cd/cd/templates/template-csaa-app-only.yaml -p NAMESPACE=${ocpProject} -p APP_MSG=${appMsg} -p IMAGE_TAG=${imageTag} -p APP_NAME=$destApp | oc apply -f -
 	  
 	     oc rollout latest dc/$destApp
 	     oc rollout status dc/$destApp -w 
