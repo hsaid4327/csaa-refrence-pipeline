@@ -8,8 +8,9 @@ def prebuild () {
 
       destApp = sh(
               returnStdout: true, 
-              script: '$(oc get route/myapp -o=jsonpath=\'{.spec.to.name}\' -n csaa-qa)'
+              script: 'oc get route/myapp -o=jsonpath=\'{.spec.to.name}\' -n csaa-qa'
               )
+     echo "The dest app is $destApp"
 
 }   
 
@@ -45,7 +46,7 @@ pipeline {
               
            }
         }           
-	       
+     
 	       
 	     steps{
               container("jnlp"){
