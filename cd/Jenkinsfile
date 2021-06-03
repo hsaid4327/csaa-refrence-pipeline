@@ -62,7 +62,7 @@ pipeline {
     stage('Blue/Green Production Deployment') {
         when {
            allOf {
-              expression {params.Environment == "csaa-dev"}
+              expression {params.Environment == "csaa-qa"}
               
            }
         }
