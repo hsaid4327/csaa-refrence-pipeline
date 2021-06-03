@@ -5,7 +5,7 @@
 
 	<groupId>com.redhat.training.openshift</groupId>
 	<artifactId>hello-java</artifactId>
-	<version>1.0</version>
+	<version>1.2</version>
 	<packaging>war</packaging>
 	<name>Red Hat Training Hello Java app</name>
 	<description>Hello microservice using Thorntail</description>
