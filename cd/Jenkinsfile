@@ -42,7 +42,7 @@ pipeline {
   			}
           }      
         
-       stage("Deploy Application Image"){
+       stage("Deploy Application Image to Dev"){
         when {
            allOf {
               expression {params.Environment == "csaa-dev"}
@@ -66,40 +66,38 @@ pipeline {
               }
                 
             }
-        } 
+       
+	     
+	     } 
     }
 
-    stage('Blue/Green Production Deployment') {
+    stage('Blue/Green QA Deployment') {
         when {
            allOf {
               expression {params.Environment == "csaa-qa"}
               
            }
         }
-        steps {
-            
-           echo "Blue/Green Deployment\n"
-           sh '''
-            oc project csaa-qa;
-            destApp=$(oc get route/myapp -o=jsonpath='{.spec.to.name}')
-	    if [[ "$destApp" == "myapp-green" ]]; then
-	        destApp="myapp-blue"
-	    else
-	        destApp="myapp-green"
-	    fi
-            echo "the destination is $destApp"
-	    cd /tmp/workspace/csaa-cd;
-	    oc process -f /tmp/workspace/csaa-cd/cd/templates/template-csaa-app-only.yaml -p NAMESPACE=\\"${params.ocpProject}\\" -p APP_MSG=\\"${params.appMsg}\\" -p IMAGE_TAG=\\"${params.imageTag}\\" -p APP_NAME=$destApp | oc apply -f -
-	  
-	     oc rollout latest dc/$destApp
-	     oc rollout status dc/$destApp -w 
-	     oc delete pod --field-selector=status.phase==Succeeded
-	    
-           '''
+    steps{
+       container("jnlp"){
+          script{
+            openshift.withCluster() {
+                openshift.withProject("${params.Environment}") {
+                    sh 'cd /tmp/workspace/csaa-cd; oc project '+ocpProject+';oc process -f /tmp/workspace/csaa-cd/cd/templates/template-csaa-app-only.yaml -p NAMESPACE='+ocpProject+'-p APP_NAME='+destApp+' -p APP_MSG='+appMsg+' -p IMAGE_TAG='+imageTag+'| oc apply -f -'
+                    
+                    sh 'oc project '+ocpProject+';oc rollout latest dc/'+ destApp+';oc rollout status dc/'+destApp+' -w; oc delete pod --field-selector=status.phase==Succeeded'
+                  
+            }   
+          }
+
+       }
+         
+     }
+}
  
             
         }
-     }
+     
     stage('Switch over to new Version') {
         when {
            allOf {
