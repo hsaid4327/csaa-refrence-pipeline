@@ -16,8 +16,6 @@
  fi
  version=$1
 
-
-
  mvn versions:set -DnewVersion=$version
-
  mvn clean install
+ mvn versions:commit
