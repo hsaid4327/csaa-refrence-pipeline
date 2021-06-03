@@ -1,9 +1,14 @@
 DEV_PROJ = 'csaa-dev'
 STAGE_DIR = '/tmp/workspace/myapp/'
 version=0.0
+token=''
 
 def prebuild () {
-        sh 'mkdir -p ' + STAGE_DIR + 'deployments'        
+        sh 'mkdir -p ' + STAGE_DIR + 'deployments' 
+       token = sh(
+              returnStdout: true, 
+              script: 'oc whoami -t'
+              )        
     }
 
 
@@ -22,6 +27,8 @@ pipeline {
                  prebuild ()
                    def pom = readMavenPom file: './app-src/pom.xml'
                    version = pom.version
+                   echo "The token is ${token}"
+                   echo "The token is $token"
                    echo "The version is ${version}"
                    sh '''cd app-src
                         
