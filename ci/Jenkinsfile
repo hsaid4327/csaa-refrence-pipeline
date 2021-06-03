@@ -1,14 +1,20 @@
 DEV_PROJ = 'csaa-dev'
 STAGE_DIR = '/tmp/workspace/myapp/'
 version=0.0
-token=''
+TOKEN=''
+USER=''
 
 def prebuild () {
         sh 'mkdir -p ' + STAGE_DIR + 'deployments' 
-       token = sh(
+       TOKEN = sh(
               returnStdout: true, 
               script: 'oc whoami -t'
-              )        
+              )
+       USER = sh(
+              returnStdout: true, 
+              script: 'oc whoami'
+              )               
+        
     }
 
 
@@ -27,8 +33,7 @@ pipeline {
                  prebuild ()
                    def pom = readMavenPom file: './app-src/pom.xml'
                    version = pom.version
-                   echo "The token is ${token}"
-                   echo "The token is $token"
+                   
                    echo "The version is ${version}"
                    sh '''cd app-src
                         
@@ -82,7 +87,7 @@ pipeline {
             }            
         steps{
                 container("skopeo"){
-                    sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds $OCP_CREDS_USR:$OCP_CREDS_PSW --dest-creds $QUAY_CREDS_USR:$QUAY_CREDS_PSW docker://image-registry.openshift-image-registry.svc.cluster.local:5000/${DEV_PROJ}/myapp:latest docker://quay.io/hsaid4326/myapp:stable"
+                    sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds $USER:$TOKEN --dest-creds $QUAY_CREDS_USR:$QUAY_CREDS_PSW docker://image-registry.openshift-image-registry.svc.cluster.local:5000/${DEV_PROJ}/myapp:latest docker://quay.io/hsaid4326/myapp:stable"
                     sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds $QUAY_CREDS_USR:$QUAY_CREDS_PSW --dest-creds $QUAY_CREDS_USR:$QUAY_CREDS_PSW docker://quay.io/hsaid4326/myapp:stable docker://quay.io/hsaid4326/myapp:${version}"
                 }
                 
