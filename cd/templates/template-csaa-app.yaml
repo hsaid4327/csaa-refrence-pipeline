@@ -22,7 +22,7 @@ objects:
     name: myapp
     namespace: ${NAMESPACE}
   spec:
-    replicas: ${REPLICAS}
+    replicas: '${REPLICAS}'
     revisionHistoryLimit: 10
     selector:
       deploymentconfig: myapp
