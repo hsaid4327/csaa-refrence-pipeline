@@ -100,4 +100,3 @@ parameters:
   displayName: Application Instances
   description: Application instances
   required: true
-  value: 1
