@@ -12,14 +12,14 @@ public class HelloResource {
     @Path("/hello")
     @Produces("text/plain")
     public String hello() {
-        String hostname = System.getenv().getOrDefault("HOSTNAME", "unknown");
+          String hostname = System.getenv().getOrDefault("HOSTNAME", "unknown");
 	      String message = System.getenv().getOrDefault("APP_MSG", null);
 	      String response = "";
 
       	if (message == null)
       	  response = "Hello world from host "+hostname+"\n";
       	else
-      	  response = "Hello planet Earth station a from host ["+hostname+"]. Message received = "+message+"\n";
+      	  response = "Hello planet Earth station [1] from host ["+hostname+"]. Message received = "+message+"\n";
 
         return response;
     }
