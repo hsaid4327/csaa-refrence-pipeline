@@ -4,7 +4,7 @@ def prebuild () {
     ocpProject="${params.Environment}"
     appMsg="\"${params.APP_MSG}\""
     imageTag="\"${params.IMG_TAG}\""
-    replicas="${params.REPLICAS}"
+    replicas="\"${params.REPLICAS}\""
     destApp = sh(
               returnStdout: true, 
               script: 'oc get route/myapp -o=jsonpath=\'{.spec.to.name}\' -n csaa-qa'
