@@ -1,123 +1,106 @@
 
-
 def prebuild () {
     ocpProject="${params.Environment}"
     appMsg="\"${params.APP_MSG}\""
     imageTag="\"${params.IMG_TAG}\""
     replicas="\"${params.REPLICAS}\""
     destApp = sh(
-              returnStdout: true, 
+              returnStdout: true,
               script: 'oc get route/myapp -o=jsonpath=\'{.spec.to.name}\' -n csaa-qa'
               )
-    
+
     if (destApp == "myapp-green")
 	destApp="myapp-blue"
     else
 	destApp="myapp-green"
-    
-   
-}   
+}
 
 pipeline {
-    
+
   agent {
         label 'csaa-agent'
      }
   parameters {
         string(name: 'APP_MSG', defaultValue: 'Default Message from application', description: 'Message to pass to deployment?')
-  
+
         choice(name: 'Environment', choices: ['csaa-dev', 'csaa-qa'], description: 'Pick environment to deploy your application')
-	
+
         string(name: 'IMG_TAG', defaultValue: 'stable', description: 'image version to deploy?')
 	string(name: 'REPLICAS', defaultValue: '1', description: 'Number of Application instances')
-  }    
+  }
 
   stages{
-    
-  	stage('Configure Properties'){ 
-              steps {
-  		script {
-  				
-  		   prebuild ()	
-       
+
+  	stage('Configure Properties'){
+      steps {
+    		script {
+
+    		   prebuild ()
+
+    		 }
   		 }
-  			}
-          }      
-        
-       stage("Deploy Application Image to Dev"){
+    }
+
+    stage("Deploy Application Image to Dev"){
         when {
            allOf {
               expression {params.Environment == "csaa-dev"}
-              
+
            }
-        }           
-     
-	       
+        }
 	     steps{
-              container("jnlp"){
+             container("jnlp"){
                  script{
                    openshift.withCluster() {
                        openshift.withProject("${params.Environment}") {
                            sh 'cd /tmp/workspace/csaa-cd; oc project '+ocpProject+';oc process -f /tmp/workspace/csaa-cd/cd/templates/template-csaa-app.yaml -p NAMESPACE='+ocpProject+' -p APP_MSG='+appMsg+' -p IMAGE_TAG='+imageTag+'| oc apply -f -'
-			   sh 'oc scale dc/myapp --replicas='+replicas+' -n '+ocpProject
-			   openshift.selector("dc", "myapp").rollout().latest()
+			                     sh 'oc scale dc/myapp --replicas='+replicas+' -n '+ocpProject
+			                     openshift.selector("dc", "myapp").rollout().latest()
                            sh 'oc project '+ocpProject+'; oc rollout status dc/myapp -w; oc delete pod --field-selector=status.phase==Succeeded'
-                         
-                   }   
+                        }
+                     }
                  }
-
               }
-                
-            }
-       
-	     
-	     } 
+  	      }
     }
 
     stage('Blue/Green QA Deployment') {
         when {
            allOf {
               expression {params.Environment == "csaa-qa"}
-              
+
            }
         }
-    steps{
-       container("jnlp"){
-          script{
-            openshift.withCluster() {
-                openshift.withProject("${params.Environment}") {
-                    sh 'cd /tmp/workspace/csaa-cd; oc project '+ocpProject+'; oc process -f /tmp/workspace/csaa-cd/cd/templates/template-csaa-app-only.yaml -p NAMESPACE='+ocpProject+' -p APP_NAME='+destApp+' -p APP_MSG='+appMsg+' -p IMAGE_TAG='+imageTag+'| oc apply -f -'
-                    
-                    sh 'oc project '+ocpProject+';oc scale dc/'+destApp+' --replicas='+replicas+';oc rollout latest dc/'+ destApp+';oc rollout status dc/'+destApp+' -w; oc delete pod --field-selector=status.phase==Succeeded'
-                  
-            }   
-          }
+      steps{
+         container("jnlp"){
+            script{
+              openshift.withCluster() {
+                  openshift.withProject("${params.Environment}") {
+                      sh 'cd /tmp/workspace/csaa-cd; oc project '+ocpProject+'; oc process -f /tmp/workspace/csaa-cd/cd/templates/template-csaa-app-only.yaml -p NAMESPACE='+ocpProject+' -p APP_NAME='+destApp+' -p APP_MSG='+appMsg+' -p IMAGE_TAG='+imageTag+'| oc apply -f -'
 
-       }
-         
-     }
-}
- 
-            
+                      sh 'oc project '+ocpProject+';oc scale dc/'+destApp+' --replicas='+replicas+';oc rollout latest dc/'+ destApp+';oc rollout status dc/'+destApp+' -w; oc delete pod --field-selector=status.phase==Succeeded'
+
+                   }
+              }
+
+           }
+
         }
-     
+      }
+
+   }
     stage('Switch over to new Version') {
         when {
            allOf {
               expression {params.Environment == "csaa-qa"}
-              
+
            }
         }
         steps {
-	   input message: "Switch to new version?"
-	   sh 'oc patch route/myapp -p \'{\"spec\":{\"to\":{\"name\":\"'+destApp+'\"}}}\''
-           
+      	   input message: "Switch to new version?"
+      	   sh 'oc patch route/myapp -p \'{\"spec\":{\"to\":{\"name\":\"'+destApp+'\"}}}\''
 
-            
         }
      }
-
-
-  }
- }//end of pipeline
-
+   }
+}//end of pipeline
