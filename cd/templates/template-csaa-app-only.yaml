@@ -96,7 +96,3 @@ parameters:
   displayName: APP NAME
   description: Name of the application to be deployed
   required: true
-- name: REPLICAS
-  displayName: Application Instances
-  description: Application instances
-  required: true
