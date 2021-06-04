@@ -5,90 +5,76 @@ TOKEN=''
 USER='opentlc-mgr'
 
 def prebuild () {
-        sh 'mkdir -p ' + STAGE_DIR + 'deployments' 
+        sh 'mkdir -p ' + STAGE_DIR + 'deployments'
        TOKEN = sh(
-              returnStdout: true, 
+              returnStdout: true,
               script: 'oc whoami -t'
               )
- 
-    }
-
-
+}
 pipeline {
-    
-    agent {
+
+  agent {
         label 'csaa-agent'
     }
-    
+ stages{
+    stage("Application Artifact Build"){
+        steps{
+          container("jnlp"){
+             script {
+             prebuild ()
+               def pom = readMavenPom file: './app-src/pom.xml'
+               version = pom.version
 
-    stages{
-        stage("Application Artifact Build"){
-            steps{
-              container("jnlp"){
-                 script {
-                 prebuild ()
-                   def pom = readMavenPom file: './app-src/pom.xml'
-                   version = pom.version
-                   
-                   echo "The version is ${version}"
-                   sh '''cd app-src
-                        
-                  mvn clean package -DskipTests=true''' 
-                }
-                  
-              }
-                
-            }
-        }
+               echo "The version is ${version}"
+               sh '''cd app-src
 
-   stage("Copy Artifact to stage"){
-            steps{
-              container("jnlp"){
-                 
-                  sh 'cp app-src/target/hello.war ' + STAGE_DIR + 'deployments'        
-                  
-                  
-              }
-                
+              mvn clean package -DskipTests=true'''
             }
+
+          }
+
         }
-        
-      stage("Build Application Image"){
-            steps{
+    }
+
+    stage("Copy Artifact to stage"){
+          steps{
+            container("jnlp"){
+              sh 'cp app-src/target/hello.war ' + STAGE_DIR + 'deployments'
+            }
+         }
+    }
+
+    stage("Build Application Image"){
+          steps{
               container("jnlp"){
-                 
-          script {
-              openshift.withCluster() {
-                openshift.withProject("${DEV_PROJ}") {
-                  openshift.selector("bc", "myapp").startBuild("--from-dir=/tmp/workspace/myapp", "--wait=true")
-                  
-        
+                script {
+                  openshift.withCluster() {
+                    openshift.withProject("${DEV_PROJ}") {
+                      openshift.selector("bc", "myapp").startBuild("--from-dir=/tmp/workspace/myapp", "--wait=true")
+                    }
                   }
-               }
-            } 
-        
+                }
               }
-                
-            }
-        }
-                
-    
+
+         }
+     }
+
     stage("Push Image to external repo"){
       input {
                 message "Should we push the image to external repo?"
-        }      
+        }
          environment {
                 QUAY_CREDS = credentials('quay-creds')
                 OCP_CREDS = credentials('ocp-registry-creds')
-            }            
+            }
         steps{
                 container("skopeo"){
                     sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-registry-token $OCP_CREDS_PSW --dest-creds $QUAY_CREDS_USR:$QUAY_CREDS_PSW docker://image-registry.openshift-image-registry.svc.cluster.local:5000/${DEV_PROJ}/myapp:latest docker://quay.io/hsaid4326/myapp:stable"
                     // sh 'skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-registry-token '+ TOKEN+' --dest-creds $QUAY_CREDS_USR:$QUAY_CREDS_PSW docker://image-registry.openshift-image-registry.svc.cluster.local:5000/'+DEV_PROJ+'/myapp:latest docker://quay.io/hsaid4326/myapp:stable'
-                        
+
                     sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds $QUAY_CREDS_USR:$QUAY_CREDS_PSW --dest-creds $QUAY_CREDS_USR:$QUAY_CREDS_PSW docker://quay.io/hsaid4326/myapp:stable docker://quay.io/hsaid4326/myapp:${version}"
                 }
-                
+
             }
         }
     }
