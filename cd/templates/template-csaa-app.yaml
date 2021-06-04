@@ -22,7 +22,7 @@ objects:
     name: myapp
     namespace: ${NAMESPACE}
   spec:
-    replicas: 1
+    replicas: ${REPLICAS}
     revisionHistoryLimit: 10
     selector:
       deploymentconfig: myapp
@@ -136,4 +136,12 @@ parameters:
   description: Secret for webhooks
   required: true
   value: stable
+- name: REPLICAS
+  displayName: Application Instances
+  description: Application instances
+  required: true
+  value: 1
+
+  
+  
 
