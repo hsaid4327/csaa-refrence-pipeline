@@ -22,7 +22,7 @@ objects:
     name: ${APP_NAME}
     namespace: ${NAMESPACE}
   spec:
-    replicas: 1
+    replicas: ${REPLICAS}
     revisionHistoryLimit: 10
     selector:
       deploymentconfig: ${APP_NAME}
@@ -96,3 +96,8 @@ parameters:
   displayName: APP NAME
   description: Name of the application to be deployed
   required: true
+- name: REPLICAS
+  displayName: Application Instances
+  description: Application instances
+  required: true
+  value: 1
