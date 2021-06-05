@@ -4,6 +4,7 @@ name: csaa-agent-1
 metadata:
   name: csaa-agent-1
 spec:
+  serviceAccountName: jenkins
   containers:
   - name: jnlp
     image: image-registry.openshift-image-registry.svc:5000/openshift/jenkins-agent-maven:latest
