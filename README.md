@@ -117,3 +117,13 @@ oc get route
 http://<route>/hello/api/hello
 ```
 ## Pipeline Best Practices
+These are some of the recommendations for pipeline implmentation:
+* A trick for speeding up the pipeline for Jenkins running inside openshift:
+ ```
+ oc set env dc/jenkins JENKINS_JAVA_OVERRIDES="-Dhudson.slaves.NodeProvisioner.initialDelay=0 -Dhudson.slaves.NodeProvisioner.MARGIN=50 -Dhudson.slaves.NodeProvisioner.MARGIN0=0.85 -Dorg.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL=300"
+ ```
+* Use Jenkin agents to pervent clogging the Jenkins master 
+* To seperate the execution of pipeline from the definition of OCP resources, use Templates/Helm charts for deployment and configuration
+* There is a debate about using Openshift DSL vs oc client commands. For portability and for ease of use, I would recommend using oc client commands. There can be a mix of both, as using DSL would demaracate cluster and project boundaries and any DSL command exectuted is within that context
+* Use external registry for storing images. The current pipeline uses Quay.
+* According to DevOps gospel, every build is potential release. With that in mind avoid using Maven release plugin which uses SNAPSHOTS. Use pom version with semantic versioning to tag every image build. 
