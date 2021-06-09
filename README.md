@@ -97,9 +97,23 @@ The CI pipelin is used to build the code and push the image to external Quay reg
 UI by creating a New Item for Pipeline and selecting *pipeline script from SCM*. This show in the image below:
 ![](images/pipeline-setup.png?raw=true) 
 In the script path put ci/Jenkinsfile
+
+
 ## CD Pipeline
 The CD pipeline is used to deploy application on csaa-dev or csaa-qa projects. The parameters allow the user to select number of application replicas and message to set on the deploymentconfig. Also the application version can be specified too:
 ![](images/cd-params.png?raw=true)
 
-For deployment to csaa-qa, the deployment toggles between blue and green versions of the application
+For deployment to csaa-qa, the deployment toggles between blue and green versions of the application.
+For testing of the application csaa-qa, get the route by:
+```
+oc project csaa-qa
+oc get route
+http://<route>/hello/api/hello
+```
+For testing of the application on csaa-dev, get the route by:
+```
+oc project csaa-qa
+oc get route
+http://<route>/hello/api/hello
+```
 ## Pipeline Best Practices
