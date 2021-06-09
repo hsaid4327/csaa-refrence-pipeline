@@ -127,3 +127,5 @@ These are some of the recommendations for pipeline implmentation:
 * There is a debate about using Openshift DSL vs oc client commands. For portability and for ease of use, I would recommend using oc client commands. There can be a mix of both, as using DSL would demaracate cluster and project boundaries and any DSL command exectuted is within that context
 * Use external registry for storing images. The current pipeline uses Quay.
 * According to DevOps gospel, every build is potential release. With that in mind avoid using Maven release plugin which uses SNAPSHOTS. Use pom version with semantic versioning to tag every image build. 
+### Good Video on Pipeline
+https://austindewey.com/2018/11/14/ci-cd-on-openshift-best-practices-a-few-at-least/
